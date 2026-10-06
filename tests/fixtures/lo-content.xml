@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+ <semantics>
+  <mrow>
+   <mi>x</mi>
+   <mo stretchy="false">=</mo>
+   <mfrac>
+    <mrow>
+     <mo stretchy="false">-</mo>
+     <mi>b</mi>
+     <mo stretchy="false">±</mo>
+     <msqrt>
+      <mrow>
+       <msup>
+        <mi>b</mi>
+        <mn>2</mn>
+       </msup>
+       <mo stretchy="false">-</mo>
+       <mn>4</mn>
+       <mi mathvariant="italic">ac</mi>
+      </mrow>
+     </msqrt>
+    </mrow>
+    <mrow>
+     <mn>2</mn>
+     <mi>a</mi>
+    </mrow>
+   </mfrac>
+  </mrow>
+  <annotation encoding="StarMath 5.0">x = {-b +- sqrt{b^2 - 4ac}} over {2a}</annotation>
+ </semantics>
+</math>

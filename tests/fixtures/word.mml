@@ -1,0 +1,29 @@
+<mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">
+  <mml:munderover>
+    <mml:mrow>
+      <mml:mo stretchy="false">&#x2211;</mml:mo>
+    </mml:mrow>
+    <mml:mrow>
+      <mml:mi>k</mml:mi>
+      <mml:mo>=</mml:mo>
+      <mml:mn>0</mml:mn>
+    </mml:mrow>
+    <mml:mrow>
+      <mml:mi>n</mml:mi>
+    </mml:mrow>
+  </mml:munderover>
+  <mml:mrow>
+    <mml:mfenced separators="|">
+      <mml:mrow>
+        <mml:mfrac linethickness="0pt">
+          <mml:mrow><mml:mi>n</mml:mi></mml:mrow>
+          <mml:mrow><mml:mi>k</mml:mi></mml:mrow>
+        </mml:mfrac>
+      </mml:mrow>
+    </mml:mfenced>
+  </mml:mrow>
+  <mml:msup>
+    <mml:mrow><mml:mi>x</mml:mi></mml:mrow>
+    <mml:mrow><mml:mi>k</mml:mi></mml:mrow>
+  </mml:msup>
+</mml:math>

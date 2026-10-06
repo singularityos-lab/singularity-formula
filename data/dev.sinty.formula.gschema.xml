@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="dev.sinty.formula" path="/dev/sinty/formula/">
+    <key name="math-font" type="s">
+      <default>''</default>
+      <summary>Math font family, empty to pick the best installed OpenType math font</summary>
+    </key>
+    <key name="font-size" type="i">
+      <range min="10" max="96"/>
+      <default>36</default>
+      <summary>Base font size in points for editing and export</summary>
+    </key>
+    <key name="export-scale" type="i">
+      <range min="1" max="8"/>
+      <default>2</default>
+      <summary>Resolution multiplier for PNG export and copied images</summary>
+    </key>
+    <key name="linear-syntax" type="s">
+      <choices>
+        <choice value="latex"/>
+        <choice value="unicodemath"/>
+      </choices>
+      <default>'latex'</default>
+      <summary>Syntax of the text editor under the formula</summary>
+    </key>
+    <key name="show-linear" type="b">
+      <default>true</default>
+      <summary>Show the text editor under the formula</summary>
+    </key>
+    <key name="show-symbols" type="b">
+      <default>true</default>
+      <summary>Show the symbols panel when a formula is open</summary>
+    </key>
+    <key name="number-equations" type="b">
+      <default>false</default>
+      <summary>Number new equations</summary>
+    </key>
+    <key name="break-width" type="i">
+      <range min="10" max="200"/>
+      <default>30</default>
+      <summary>Width in ems after which long equations are broken into lines</summary>
+    </key>
+    <key name="wrap-mode" type="s">
+      <choices>
+        <choice value="indent"/>
+        <choice value="right"/>
+      </choices>
+      <default>'indent'</default>
+      <summary>How the lines of a broken equation are placed: indented or aligned to the right</summary>
+    </key>
+    <key name="wrap-indent" type="i">
+      <range min="0" max="20"/>
+      <default>2</default>
+      <summary>Indent of the continuation lines of a broken equation, in ems</summary>
+    </key>
+    <key name="justification" type="s">
+      <choices>
+        <choice value="center-group"/>
+        <choice value="center"/>
+        <choice value="left"/>
+        <choice value="right"/>
+      </choices>
+      <default>'center-group'</default>
+      <summary>Justification of new equations</summary>
+    </key>
+    <key name="number-style" type="s">
+      <choices>
+        <choice value="parens"/>
+        <choice value="brackets"/>
+        <choice value="plain"/>
+      </choices>
+      <default>'parens'</default>
+      <summary>Format of equation numbers</summary>
+    </key>
+    <key name="history" type="as">
+      <default>[]</default>
+      <summary>Formulas recently copied, exported or inserted, as LaTeX</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Formula
+GenericName=Equation Editor
+Comment=Write equations for documents, slides and the web
+Exec=singularity-formula %U
+Icon=dev.sinty.formula
+Terminal=false
+Type=Application
+Categories=Office;Education;Science;Math;
+MimeType=application/mathml+xml;application/vnd.oasis.opendocument.formula;text/x-tex;
+Keywords=formula;equation;math;mathml;latex;unicodemath;fraction;integral;matrix;
+StartupWMClass=dev.sinty.formula
+X-Singularity-Dock-Recent=true
+Actions=new-formula;
+
+[Desktop Action new-formula]
+Name=New Formula
+Icon=document-new-symbolic
+Exec=singularity-formula --new

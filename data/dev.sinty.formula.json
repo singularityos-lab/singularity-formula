@@ -1,0 +1,176 @@
+{
+    "schema-id": "dev.sinty.formula",
+    "settings": [
+        {
+            "key": "math-font",
+            "label": "Math Font",
+            "type": "string",
+            "widget": "combo",
+            "subtitle": "OpenType math fonts give the best results; others are used as a fallback",
+            "options": [
+                {
+                    "id": "",
+                    "label": "Automatic"
+                },
+                {
+                    "id": "STIX Two Math",
+                    "label": "STIX Two Math"
+                },
+                {
+                    "id": "Latin Modern Math",
+                    "label": "Latin Modern Math"
+                },
+                {
+                    "id": "TeX Gyre Termes Math",
+                    "label": "TeX Gyre Termes Math"
+                },
+                {
+                    "id": "TeX Gyre Pagella Math",
+                    "label": "TeX Gyre Pagella Math"
+                },
+                {
+                    "id": "TeX Gyre DejaVu Math",
+                    "label": "TeX Gyre DejaVu Math"
+                },
+                {
+                    "id": "Libertinus Math",
+                    "label": "Libertinus Math"
+                },
+                {
+                    "id": "Noto Sans Math",
+                    "label": "Noto Sans Math"
+                }
+            ]
+        },
+        {
+            "key": "font-size",
+            "label": "Font Size",
+            "type": "int",
+            "widget": "spin",
+            "min": 10,
+            "max": 96
+        },
+        {
+            "key": "export-scale",
+            "label": "Image Resolution Multiplier",
+            "type": "int",
+            "widget": "spin",
+            "min": 1,
+            "max": 8,
+            "subtitle": "Used for PNG export and copied images"
+        },
+        {
+            "key": "linear-syntax",
+            "label": "Text Syntax",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                {
+                    "id": "latex",
+                    "label": "LaTeX"
+                },
+                {
+                    "id": "unicodemath",
+                    "label": "UnicodeMath"
+                }
+            ]
+        },
+        {
+            "key": "show-linear",
+            "label": "Show the Text Editor",
+            "type": "boolean",
+            "widget": "toggle"
+        },
+        {
+            "key": "show-symbols",
+            "label": "Show the Symbols Panel",
+            "type": "boolean",
+            "widget": "toggle"
+        },
+        {
+            "key": "number-equations",
+            "label": "Number New Equations",
+            "type": "boolean",
+            "widget": "toggle"
+        },
+        {
+            "key": "justification",
+            "label": "Justification",
+            "type": "string",
+            "widget": "combo",
+            "subtitle": "Placement of new equations",
+            "options": [
+                {
+                    "id": "center-group",
+                    "label": "Centered as Group"
+                },
+                {
+                    "id": "center",
+                    "label": "Centered"
+                },
+                {
+                    "id": "left",
+                    "label": "Left"
+                },
+                {
+                    "id": "right",
+                    "label": "Right"
+                }
+            ]
+        },
+        {
+            "key": "break-width",
+            "label": "Break Long Equations After",
+            "type": "int",
+            "widget": "spin",
+            "min": 10,
+            "max": 200,
+            "subtitle": "Width in ems, used by Format, Break Long Equations"
+        },
+        {
+            "key": "wrap-mode",
+            "label": "Broken Lines",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                {
+                    "id": "indent",
+                    "label": "Indent Continuation Lines"
+                },
+                {
+                    "id": "right",
+                    "label": "Align Continuation Lines Right"
+                }
+            ]
+        },
+        {
+            "key": "wrap-indent",
+            "label": "Continuation Indent",
+            "type": "int",
+            "widget": "spin",
+            "min": 0,
+            "max": 20,
+            "subtitle": "In ems"
+        },
+        {
+            "key": "number-style",
+            "label": "Equation Numbers",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                {
+                    "id": "parens",
+                    "label": "(1)"
+                },
+                {
+                    "id": "brackets",
+                    "label": "[1]"
+                },
+                {
+                    "id": "plain",
+                    "label": "1"
+                }
+            ]
+        }
+    ]
+}
