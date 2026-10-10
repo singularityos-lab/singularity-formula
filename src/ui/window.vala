@@ -357,6 +357,24 @@ namespace Singularity.Apps.Formula {
             });
             track (save);
             share_bubble = add_bubble_icon ("singularity-share-symbolic", _("Share"), () => run ("share"));
+            if (Singularity.Collab.Client.installed ()) {
+                Gtk.Widget? together = null;
+                together = add_bubble_icon ("system-users-symbolic", _("Work Together"), () => {
+                    if (FormulaCollab.of (this) != null && FormulaCollab.of (this).session.hosting) {
+                        var menu = new ContextMenu (content_stack);
+                        menu.add_item (_("Invite More People..."), "system-users-symbolic", () => FormulaCollab.share (this, together));
+                        menu.add_item (_("Stop Working Together"), "process-stop-symbolic", () => FormulaCollab.stop (this));
+                        anchor_menu (menu, together);
+                        return;
+                    }
+                    if (FormulaCollab.of (this) != null) {
+                        FormulaCollab.stop (this);
+                        return;
+                    }
+                    FormulaCollab.share (this, together);
+                });
+                track (together);
+            }
             track (share_bubble);
             undo_bubble = add_bubble_icon ("edit-undo-symbolic", _("Undo (Ctrl+Z)"), () => run ("undo"));
             track (undo_bubble);
@@ -591,6 +609,10 @@ namespace Singularity.Apps.Formula {
             sync_actions ();
             update_state_actions ();
             canvas.grab_focus ();
+        }
+
+        public void notify_collab (string message) {
+            add_toast (new Singularity.Widgets.Toast (message));
         }
 
         private void on_edit () {

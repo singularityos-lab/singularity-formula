@@ -76,6 +76,7 @@ ui = files(
   'src/ui/canvas.vala',
   'src/ui/palette.vala',
   'src/ui/cloud_actions.vala',
+  'src/ui/collab.vala',
   'src/ui/print_source.vala',
   'src/ui/ink_view.vala',
   'src/ui/autocorrect_view.vala',
@@ -115,4 +116,17 @@ install_data('data/dev.sinty.formula.open.ini',
 )
 install_data('data/icons/dev.sinty.formula.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
+)
+
+install_data('data/capabilities/dev.sinty.Collab.Formula1.ini',
+  install_dir: get_option('datadir') / 'singularity' / 'capabilities')
+
+service_conf = configuration_data()
+service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
+configure_file(
+  input: 'data/dev.sinty.formula.service.in',
+  output: 'dev.sinty.formula.service',
+  configuration: service_conf,
+  install: true,
+  install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
