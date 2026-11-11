@@ -84,6 +84,7 @@ namespace Singularity.Apps.Formula {
             var provider = new CssProvider ();
             provider.load_from_string (CSS);
             StyleContext.add_provider_for_display (Gdk.Display.get_default (), provider, STYLE_PROVIDER_PRIORITY_USER + 1);
+            FormulaIntents.install (this);
             var new_action = new SimpleAction ("new", null);
             new_action.activate.connect (() => {
                 var w = get_active_window () as FormulaWindow;

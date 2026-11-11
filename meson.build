@@ -82,6 +82,7 @@ ui = files(
   'src/ui/autocorrect_view.vala',
   'src/ui/window.vala',
   'src/ui/app.vala',
+  'src/ui/agent_intents.vala',
 )
 
 formula_exe = executable('singularity-formula',
