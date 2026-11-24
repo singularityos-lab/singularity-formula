@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Formula {
 
-    public class FormulaApp : Singularity.Application {
+    public class FormulaApp : Singularity.Application, Singularity.Migration.Migratable {
         public GLib.Settings? settings;
         public History history;
         private static MathFont? font_cache;
@@ -291,6 +291,48 @@ namespace Singularity.Apps.Formula {
             } else if (initial_latex != null || initial_mathml != null) {
                 start_with_latex (w);
             }
+        }
+
+        public void prepare_move () throws Singularity.Migration.MigrationError {
+            foreach (var w in get_windows ()) {
+                if (w is FormulaWindow) ((FormulaWindow) w).prepare_move ();
+            }
+        }
+
+        public Variant save_model () {
+            return new VariantDict ().end ();
+        }
+
+        public async void restore_model (Variant model) throws Error {
+        }
+
+        public string window_kind (Gtk.Window w) {
+            return (w is FormulaWindow) ? "formula" : "";
+        }
+
+        public Variant save_window (Gtk.Window w) {
+            return ((FormulaWindow) w).save_migration ();
+        }
+
+        public string[] files () {
+            string[] all = {};
+            foreach (var w in get_windows ()) {
+                if (!(w is FormulaWindow)) continue;
+                foreach (var f in ((FormulaWindow) w).migration_files ()) all += f;
+            }
+            return all;
+        }
+
+        public async Gtk.Window? rebuild_window (string kind, Variant data) throws Error {
+            if (kind != "formula") return null;
+            FormulaWindow? w = null;
+            foreach (var x in get_windows ()) {
+                var fw = x as FormulaWindow;
+                if (fw != null && fw.is_empty ()) w = fw;
+            }
+            if (w == null) w = new FormulaWindow (this);
+            w.restore_migration (data);
+            return w;
         }
 
         private void start_with_latex (FormulaWindow w) {

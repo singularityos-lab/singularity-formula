@@ -86,6 +86,64 @@ namespace Singularity.Apps.Formula {
             return cur;
         }
 
+        private static Variant state_variant (UndoState s) {
+            var path = new VariantBuilder (new VariantType ("ai"));
+            foreach (int p in s.path) path.add ("i", p);
+            return new Variant ("(s@aii)", MathmlWriter.write (s.root, true, null, false, s.tag), path.end (), s.index);
+        }
+
+        private static UndoState? state_from (Variant v) {
+            string xml;
+            VariantIter it;
+            int i;
+            v.get ("(saii)", out xml, out it, out i);
+            ParseResult res;
+            try {
+                res = MathmlReader.parse (xml);
+            } catch (ParseError e) {
+                return null;
+            }
+            int[] path = {};
+            int p;
+            while (it.next ("i", out p)) path += p;
+            return new UndoState (res.root, path, i, res.tag);
+        }
+
+        public Variant save_history () {
+            var undo = new VariantBuilder (new VariantType ("a(saii)"));
+            foreach (var s in undo_stack) undo.add_value (state_variant (s));
+            var redo = new VariantBuilder (new VariantType ("a(saii)"));
+            foreach (var s in redo_stack) redo.add_value (state_variant (s));
+            var caret = new VariantBuilder (new VariantType ("ai"));
+            foreach (int p in path_of (row)) caret.add ("i", p);
+            return new Variant ("(@a(saii)@a(saii)@aiiissb)", undo.end (), redo.end (), caret.end (), index, anchor, pending ?? "", coalesce, text_mode);
+        }
+
+        public void restore_history (Variant history) {
+            undo_stack.clear ();
+            redo_stack.clear ();
+            foreach (var v in history.get_child_value (0)) {
+                var s = state_from (v);
+                if (s != null) undo_stack.add (s);
+            }
+            foreach (var v in history.get_child_value (1)) {
+                var s = state_from (v);
+                if (s != null) redo_stack.add (s);
+            }
+            int[] path = {};
+            foreach (var v in history.get_child_value (2)) path += v.get_int32 ();
+            row = row_at_path (doc.root, path) ?? doc.root;
+            index = history.get_child_value (3).get_int32 ().clamp (0, row.size);
+            anchor = history.get_child_value (4).get_int32 ();
+            if (anchor > row.size) anchor = -1;
+            string p = history.get_child_value (5).get_string ();
+            pending = p != "" ? p : null;
+            coalesce = history.get_child_value (6).get_string ();
+            text_mode = history.get_child_value (7).get_boolean ();
+            changed ();
+            moved ();
+        }
+
         private UndoState snap () {
             return new UndoState (doc.root.copy_row (), path_of (row), index, doc.tag);
         }

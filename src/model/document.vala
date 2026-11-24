@@ -40,6 +40,54 @@ namespace Singularity.Apps.Formula {
             label = r.label;
         }
 
+        public Variant save_state () {
+            var d = new VariantDict ();
+            d.insert_value ("root", new Variant.string (MathmlWriter.write (root, true, null, false)));
+            d.insert_value ("display", new Variant.boolean (display));
+            if (tag != null) d.insert_value ("tag", new Variant.string (tag));
+            d.insert_value ("notag", new Variant.boolean (notag));
+            if (label != null) d.insert_value ("label", new Variant.string (label));
+            d.insert_value ("justification", new Variant.string (justification.to_mathml ()));
+            d.insert_value ("number-style", new Variant.string (number_style.to_string ()));
+            d.insert_value ("line-width", new Variant.double (line_width));
+            d.insert_value ("break-after", new Variant.boolean (break_after));
+            d.insert_value ("wrap-indent", new Variant.double (wrap_indent));
+            d.insert_value ("wrap-right", new Variant.boolean (wrap_right));
+            d.insert_value ("numbered", new Variant.boolean (numbered));
+            d.insert_value ("first-number", new Variant.int32 (first_number));
+            d.insert_value ("number-prefix", new Variant.string (number_prefix));
+            d.insert_value ("modified", new Variant.boolean (modified));
+            return d.end ();
+        }
+
+        public static FormulaDoc from_state (Variant state) throws ParseError {
+            var root = new VariantDict (state).lookup_value ("root", VariantType.STRING);
+            var doc = new FormulaDoc.from_result (MathmlReader.parse (root != null ? root.get_string () : ""));
+            doc.apply_state (state);
+            return doc;
+        }
+
+        public void apply_state (Variant state) {
+            var d = new VariantDict (state);
+            Variant? v;
+            if ((v = d.lookup_value ("display", VariantType.BOOLEAN)) != null) display = v.get_boolean ();
+            v = d.lookup_value ("tag", VariantType.STRING);
+            tag = v != null ? v.get_string () : null;
+            if ((v = d.lookup_value ("notag", VariantType.BOOLEAN)) != null) notag = v.get_boolean ();
+            v = d.lookup_value ("label", VariantType.STRING);
+            label = v != null ? v.get_string () : null;
+            if ((v = d.lookup_value ("justification", VariantType.STRING)) != null) justification = Singularity.Equations.Justification.from_mathml (v.get_string ());
+            if ((v = d.lookup_value ("number-style", VariantType.STRING)) != null) number_style = Singularity.Equations.NumberStyle.parse (v.get_string ());
+            if ((v = d.lookup_value ("line-width", VariantType.DOUBLE)) != null) line_width = v.get_double ();
+            if ((v = d.lookup_value ("break-after", VariantType.BOOLEAN)) != null) break_after = v.get_boolean ();
+            if ((v = d.lookup_value ("wrap-indent", VariantType.DOUBLE)) != null) wrap_indent = v.get_double ();
+            if ((v = d.lookup_value ("wrap-right", VariantType.BOOLEAN)) != null) wrap_right = v.get_boolean ();
+            if ((v = d.lookup_value ("numbered", VariantType.BOOLEAN)) != null) numbered = v.get_boolean ();
+            if ((v = d.lookup_value ("first-number", VariantType.INT32)) != null) first_number = v.get_int32 ();
+            if ((v = d.lookup_value ("number-prefix", VariantType.STRING)) != null) number_prefix = v.get_string ();
+            if ((v = d.lookup_value ("modified", VariantType.BOOLEAN)) != null) modified = v.get_boolean ();
+        }
+
         public void set_root (Row r) {
             _root = r;
             _root.parent = null;

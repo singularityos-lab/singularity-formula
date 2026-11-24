@@ -611,6 +611,52 @@ namespace Singularity.Apps.Formula {
             canvas.grab_focus ();
         }
 
+        public void prepare_move () throws Singularity.Migration.MigrationError {
+            if (insert_target != null) throw new Singularity.Migration.MigrationError.UNSUPPORTED (_("This formula goes back to the app that asked for it. Insert it or close it before moving Formula."));
+        }
+
+        public string[] migration_files () {
+            if (doc == null || doc.path == null) return {};
+            return { Singularity.Migration.portable_path (File.new_for_path (doc.path)) };
+        }
+
+        public Variant save_migration () {
+            var d = new VariantDict ();
+            d.insert_value ("page", new Variant.string (content_stack.visible_child_name));
+            d.insert_value ("syntax", new Variant.string (syntax == LinearSyntax.LATEX ? "latex" : "unicodemath"));
+            if (doc != null) {
+                d.insert_value ("doc", doc.save_state ());
+                d.insert_value ("path", new Variant.string (doc.path != null ? Singularity.Migration.portable_path (File.new_for_path (doc.path)) : ""));
+                d.insert_value ("editor", editor.save_history ());
+            }
+            return d.end ();
+        }
+
+        public void restore_migration (Variant data) {
+            var d = new VariantDict (data);
+            var syn = d.lookup_value ("syntax", VariantType.STRING);
+            var a = lookup_action ("syntax") as SimpleAction;
+            if (syn != null && a != null && a.get_state ().get_string () != syn.get_string ()) a.change_state (syn);
+            var state = d.lookup_value ("doc", VariantType.VARDICT);
+            if (state != null) {
+                try {
+                    var restored = FormulaDoc.from_state (state);
+                    string path = (d.lookup_value ("path", VariantType.STRING) ?? new Variant.string ("")).get_string ();
+                    if (path != "") restored.path = Singularity.Migration.local_file (path).get_path ();
+                    load_document (restored);
+                    doc.apply_state (state);
+                    var history = d.lookup_value ("editor", null);
+                    if (history != null) editor.restore_history (history);
+                    update_title ();
+                    update_state_actions ();
+                } catch (ParseError e) {
+                    show_error (_("Could Not Open"), LatexParser.error_message (e));
+                }
+            }
+            string page = (d.lookup_value ("page", VariantType.STRING) ?? new Variant.string ("")).get_string ();
+            if (page == "ink") open_ink ();
+        }
+
         public void notify_collab (string message) {
             add_toast (new Singularity.Widgets.Toast (message));
         }

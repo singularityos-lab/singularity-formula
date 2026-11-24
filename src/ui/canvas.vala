@@ -14,6 +14,7 @@ namespace Singularity.Apps.Formula {
         private bool dirty = true;
         private bool caret_on = true;
         private uint blink_id;
+        private ulong blink_setting_id;
         private IMMulticontext im;
         private const double MARGIN = 48;
         private uint a11y_id;
@@ -110,6 +111,14 @@ namespace Singularity.Apps.Formula {
                 return true;
             });
             add_controller (scroll);
+            blink_setting_id = get_settings ().notify["gtk-cursor-blink"].connect (() => {
+                restart_blink ();
+                queue_draw ();
+            });
+            notify["has-focus"].connect (() => {
+                restart_blink ();
+                queue_draw ();
+            });
             restart_blink ();
             update_property (AccessibleProperty.LABEL, _("Equation"), -1);
             update_accessible ();
@@ -176,6 +185,8 @@ namespace Singularity.Apps.Formula {
             a11y_id = 0;
             if (blink_id != 0) Source.remove (blink_id);
             blink_id = 0;
+            if (blink_setting_id != 0) get_settings ().disconnect (blink_setting_id);
+            blink_setting_id = 0;
             base.dispose ();
         }
 
@@ -205,6 +216,8 @@ namespace Singularity.Apps.Formula {
         private void restart_blink () {
             caret_on = true;
             if (blink_id != 0) Source.remove (blink_id);
+            blink_id = 0;
+            if (!get_settings ().gtk_cursor_blink) return;
             blink_id = Timeout.add (530, () => {
                 caret_on = !caret_on;
                 if (has_focus) queue_draw ();
