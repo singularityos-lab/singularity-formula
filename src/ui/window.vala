@@ -54,10 +54,6 @@ namespace Singularity.Apps.Formula {
             editor_page = new Box (Orientation.VERTICAL, 0);
             editor_page.add_css_class ("formula-page");
             content_stack.add_named (editor_page, "editor");
-            ink_page = new InkPage ();
-            ink_page.insert_requested.connect ((latex) => finish_ink (latex));
-            ink_page.cancelled.connect (() => leave_ink ());
-            content_stack.add_named (ink_page, "ink");
             set_content (content_stack);
             build_sidebar ();
             build_bubbles ();
@@ -1097,8 +1093,18 @@ namespace Singularity.Apps.Formula {
         }
 
 
+        private InkPage ensure_ink_page () {
+            if (ink_page == null) {
+                ink_page = new InkPage ();
+                ink_page.insert_requested.connect ((latex) => finish_ink (latex));
+                ink_page.cancelled.connect (() => leave_ink ());
+                content_stack.add_named (ink_page, "ink");
+            }
+            return ink_page;
+        }
+
         public void open_ink () {
-            ink_page.reset ();
+            ensure_ink_page ().reset ();
             content_stack.visible_child_name = "ink";
             foreach (var w in doc_bubbles) w.visible = false;
             set_sidebar_visible (false);

@@ -33,22 +33,33 @@ namespace Singularity.Apps.Formula {
         public string? user_path;
 
         public static InkRecognizer get_default () {
-            if (instance == null) {
-                var fonts = new Gee.ArrayList<MathFont> ();
-                fonts.add (MathFont.get_default (null));
-                foreach (var fam in new string[] { "DejaVu Serif", "DejaVu Sans", "Latin Modern Math", "STIX Two Math", "FreeSerif", "Inter", "Cantarell", "Noto Sans", "Liberation Sans" }) {
-                    string matched;
-                    string? file = MathFont.find_file (fam, out matched);
-                    if (file == null || matched != fam) continue;
-                    var f = MathFont.load_file (file, fam, false);
-                    if (f != null && f.family != fonts[0].family) fonts.add (f);
-                    if (fonts.size >= 6) break;
-                }
-                instance = new InkRecognizer.from_fonts (fonts);
-                instance.user_path = Path.build_filename (Environment.get_user_data_dir (), "singularity-formula", "ink-templates.json");
-                instance.load_user ();
-            }
+            if (instance == null) adopt (new InkRecognizer.from_fonts (template_fonts ()));
             return instance;
+        }
+
+        public static bool ready () {
+            return instance != null;
+        }
+
+        public static Gee.List<MathFont> template_fonts () {
+            var fonts = new Gee.ArrayList<MathFont> ();
+            fonts.add (MathFont.get_default (null));
+            foreach (var fam in new string[] { "DejaVu Serif", "DejaVu Sans", "Latin Modern Math", "STIX Two Math", "FreeSerif", "Inter", "Cantarell", "Noto Sans", "Liberation Sans" }) {
+                string matched;
+                string? file = MathFont.find_file (fam, out matched);
+                if (file == null || matched != fam) continue;
+                var f = MathFont.load_file (file, fam, false);
+                if (f != null && f.family != fonts[0].family) fonts.add (f);
+                if (fonts.size >= 6) break;
+            }
+            return fonts;
+        }
+
+        public static void adopt (InkRecognizer recognizer) {
+            if (instance != null) return;
+            instance = recognizer;
+            instance.user_path = Path.build_filename (Environment.get_user_data_dir (), "singularity-formula", "ink-templates.json");
+            instance.load_user ();
         }
 
         public InkRecognizer.from_fonts (Gee.List<MathFont> fonts) {

@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Formula {
 
-    public class FormulaApp : Singularity.Application, Singularity.Migration.Migratable {
+    public class FormulaApp : Singularity.Application, Singularity.Migration.Migratable, Singularity.Startup.Bootable {
         public GLib.Settings? settings;
         public History history;
         private static MathFont? font_cache;
@@ -276,7 +276,60 @@ namespace Singularity.Apps.Formula {
             set_menubar (menu);
         }
 
-        public override void activate () {
+        public Singularity.Startup.Plan build_plan (Singularity.Startup.Request request) {
+            var plan = new Singularity.Startup.Plan ();
+            plan.version = "formula-1";
+            if (request.kind == Singularity.Startup.RequestKind.SERVICE) {
+                plan.main ("ready", Singularity.Startup.Category.PREPARE, (c) => {})
+                    .reaches (Singularity.Startup.Milestone.SHELL_READY)
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            var window = plan.main ("window", Singularity.Startup.Category.SHELL, (c) => {
+                c.window = request.kind == Singularity.Startup.RequestKind.OPEN ? present_window () : show_start ();
+            }).reaches (Singularity.Startup.Milestone.SHELL_READY);
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) {
+                var files = request.files ();
+                plan.main ("open-file", Singularity.Startup.Category.CONTENT, (c) => open_files (files))
+                    .depends_on ("window")
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            } else {
+                window.reaches (Singularity.Startup.Milestone.CONTENT_READY).reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            }
+            plan.main ("ink-fonts", Singularity.Startup.Category.DEFERRED, (c) => {
+                if (!InkRecognizer.ready ()) ink_fonts = InkRecognizer.template_fonts ();
+            }).depends_on ("window").recoverable ("handwriting");
+            plan.worker ("ink-templates", Singularity.Startup.Category.DEFERRED, (cancellable) => {
+                var fonts = ink_fonts;
+                return fonts != null ? new InkRecognizer.from_fonts (fonts) : null;
+            }, (c, result) => {
+                if (result != null) InkRecognizer.adopt ((InkRecognizer) result);
+                ink_fonts = null;
+            }).depends_on ("ink-fonts").recoverable ("handwriting");
+            return plan;
+        }
+
+        public void handle_request (Singularity.Startup.Request request) {
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) {
+                present_window ();
+                open_files (request.files ());
+            } else {
+                show_start ();
+            }
+        }
+
+        private Gee.List<MathFont>? ink_fonts;
+
+        private FormulaWindow present_window () {
+            var w = get_active_window () as FormulaWindow;
+            if (w == null) w = new FormulaWindow (this);
+            w.present ();
+            return w;
+        }
+
+        private FormulaWindow show_start () {
             var w = get_active_window () as FormulaWindow;
             if (w == null) {
                 w = new FormulaWindow (this);
@@ -291,6 +344,7 @@ namespace Singularity.Apps.Formula {
             } else if (initial_latex != null || initial_mathml != null) {
                 start_with_latex (w);
             }
+            return w;
         }
 
         public void prepare_move () throws Singularity.Migration.MigrationError {
@@ -354,7 +408,7 @@ namespace Singularity.Apps.Formula {
             w.load_document (d);
         }
 
-        public override void open (File[] files, string hint) {
+        private void open_files (File[] files) {
             foreach (var f in files) open_file (f, null);
         }
 
